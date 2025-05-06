@@ -1,0 +1,8 @@
+{
+  "paths": [
+    "1_model_creation/main.py",
+    "1_model_creation/requirements.txt",
+    "package.json"
+  ],
+  "filters": ["*.ts", "*.py", ".json", "*.txt"]
+}
