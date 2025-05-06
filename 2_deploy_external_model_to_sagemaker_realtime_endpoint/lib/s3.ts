@@ -16,9 +16,16 @@ export class S3Resources extends Construct {
         this.bucket = new s3.Bucket(this, 'ModelBucket', {
             bucketName: props.bucketName ?? `model-bucket-${cdk.Aws.ACCOUNT_ID}-${cdk.Aws.REGION}`,
             removalPolicy: cdk.RemovalPolicy.DESTROY,
-            autoDeleteObjects: true, // Ensures objects are deleted when bucket is destroyed
-            versioned: false, // No versioning for simplicity
-            blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL, // Enforce private access
+            autoDeleteObjects: true,
+            versioned: false,
+            blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+        });
+
+        // Export the bucket name as a CloudFormation output with a fixed key
+        new cdk.CfnOutput(this, 'ModelBucketName', {
+            value: this.bucket.bucketName,
+            description: 'Name of the S3 bucket for the model',
+            exportName: 'ModelBucketName', // Explicitly set the export name
         });
     }
 }
