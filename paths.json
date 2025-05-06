@@ -2,6 +2,8 @@
   "paths": [
     "1_model_creation/main.py",
     "1_model_creation/requirements.txt",
+    "2_deploy_external_model_to_sagemaker_realtime_endpoint/bin/*",
+    "2_deploy_external_model_to_sagemaker_realtime_endpoint/lib/*",
     "package.json"
   ],
   "filters": ["*.ts", "*.py", ".json", "*.txt"]
