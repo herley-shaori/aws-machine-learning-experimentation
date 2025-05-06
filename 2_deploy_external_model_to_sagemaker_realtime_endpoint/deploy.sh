@@ -7,16 +7,16 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-# Retrieve the S3 bucket name from the stack output
+# Retrieve the S3 bucket name from the stack output using ExportName
 STACK_NAME="DeployExternalModelToSagemakerRealtimeEndpoint"
 echo "Fetching outputs for stack: $STACK_NAME"
 aws cloudformation describe-stacks --stack-name "$STACK_NAME" --query "Stacks[0].Outputs" --output json
 
-BUCKET_NAME=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --query "Stacks[0].Outputs[?OutputKey=='ModelBucketName'].OutputValue" --output text 2>/dev/null)
+BUCKET_NAME=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --query "Stacks[0].Outputs[?ExportName=='ModelBucketName'].OutputValue" --output text 2>/dev/null)
 
 # Check if BUCKET_NAME is empty or unset
 if [ -z "$BUCKET_NAME" ]; then
-  echo "Error: Could not retrieve bucket name. Verify that the stack '$STACK_NAME' includes a 'ModelBucketName' output."
+  echo "Error: Could not retrieve bucket name. Verify that the stack '$STACK_NAME' includes an output with ExportName 'ModelBucketName'."
   exit 1
 fi
 
