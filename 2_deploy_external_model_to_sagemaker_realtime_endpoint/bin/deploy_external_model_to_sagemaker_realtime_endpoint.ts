@@ -1,6 +1,6 @@
 #!/opt/homebrew/opt/node/bin/node
 import * as cdk from 'aws-cdk-lib';
-import { DeployExternalModelToSagemakerRealtimeEndpointStack } from '../lib/2_deploy_external_model_to_sagemaker_realtime_endpoint-stack';
+import { DeployExternalModelToSagemakerRealtimeEndpointStack } from '../lib/deploy_external_model_to_sagemaker_realtime_endpoint-stack';
 
 // Create the CDK app
 const app = new cdk.App();
