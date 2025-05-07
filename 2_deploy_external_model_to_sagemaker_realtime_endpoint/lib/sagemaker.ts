@@ -1,11 +1,10 @@
 import * as cdk from 'aws-cdk-lib';
 import * as sagemaker from 'aws-cdk-lib/aws-sagemaker';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 
 export interface SageMakerProps extends cdk.StackProps {
-    modelBucket: s3.Bucket;
+    modelDataUrl: string;
     executionRole: iam.IRole;
     imageUri: string;
     subnetIds: string[];
@@ -18,14 +17,12 @@ export class SageMakerResources extends Construct {
     constructor(scope: Construct, id: string, props: SageMakerProps) {
         super(scope, id);
 
-        const modelDataUrl = `s3://${props.modelBucket.bucketName}/model.tar.gz`;
-
         // Define the SageMaker model
         const model = new sagemaker.CfnModel(this, 'RandomForestModel', {
             executionRoleArn: props.executionRole.roleArn,
             primaryContainer: {
                 image: props.imageUri,
-                modelDataUrl: modelDataUrl,
+                modelDataUrl: props.modelDataUrl,
             },
         });
 

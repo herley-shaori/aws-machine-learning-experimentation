@@ -1,8 +1,9 @@
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
+import * as path from 'path';
 import { Construct } from 'constructs';
 import { Network } from './network';
-import { S3Resources } from './s3';
 import { SageMakerResources } from './sagemaker';
 
 export class DeployExternalModelToSagemakerRealtimeEndpointStack extends cdk.Stack {
@@ -14,19 +15,10 @@ export class DeployExternalModelToSagemakerRealtimeEndpointStack extends cdk.Sta
       maxAzs: 2,
     });
 
-    // Create S3 bucket
-    const s3Resources = new S3Resources(this, 'S3');
-
     // Create IAM role for SageMaker
     const sageMakerRole = new iam.Role(this, 'SageMakerExecutionRole', {
       assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
     });
-
-    // Grant S3 access
-    sageMakerRole.addToPolicy(new iam.PolicyStatement({
-      actions: ['s3:GetObject'],
-      resources: [s3Resources.bucket.arnForObjects('*')],
-    }));
 
     // Add permissions for CloudWatch, Logs, and EC2
     sageMakerRole.addToPolicy(new iam.PolicyStatement({
@@ -47,9 +39,17 @@ export class DeployExternalModelToSagemakerRealtimeEndpointStack extends cdk.Sta
     const subnetIds = network.vpc.publicSubnets.map(subnet => subnet.subnetId);
     const securityGroupIds = [network.securityGroup.securityGroupId];
 
+    // Create model asset
+    const modelAsset = new s3_assets.Asset(this, 'ModelAsset', {
+      path: path.join(__dirname, '../model.tar.gz'),
+    });
+
+    // Grant read access to the SageMaker role
+    modelAsset.grantRead(sageMakerRole);
+
     // Create SageMaker resources
     const sageMakerResources = new SageMakerResources(this, 'SageMaker', {
-      modelBucket: s3Resources.bucket,
+      modelDataUrl: modelAsset.s3ObjectUrl,
       executionRole: sageMakerRole,
       imageUri: imageUri,
       subnetIds: subnetIds,
