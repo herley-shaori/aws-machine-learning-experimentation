@@ -61,16 +61,10 @@ export class DeployExternalModelToSagemakerRealtimeEndpointStack extends cdk.Sta
       securityGroupIds,
     });
 
-    // Output the endpoint name and bucket name
+    // Output the endpoint name
     new cdk.CfnOutput(this, 'EndpointName', {
       value: sageMakerResources.endpoint.endpointName!,
       description: 'Name of the SageMaker endpoint',
-    });
-
-    new cdk.CfnOutput(this, 'ModelBucketName', {
-      value: s3Resources.bucket.bucketName,
-      description: 'Name of the S3 bucket for the model',
-      exportName: 'ModelBucketName',
     });
   }
 }
