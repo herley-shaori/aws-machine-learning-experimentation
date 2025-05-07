@@ -41,7 +41,7 @@ export class DeployExternalModelToSagemakerRealtimeEndpointStack extends cdk.Sta
     }));
 
     // Define scikit-learn image URI (verify for ap-southeast-3)
-    const imageUri = '763104351884.dkr.ecr.ap-southeast-3.amazonaws.com/sagemaker-scikit-learn:0.23-1-cpu-py3';
+    const imageUri = '951798379941.dkr.ecr.ap-southeast-3.amazonaws.com/sagemaker-scikit-learn:1.2-1';
 
     // Get subnet and security group IDs
     const subnetIds = network.vpc.publicSubnets.map(subnet => subnet.subnetId);
