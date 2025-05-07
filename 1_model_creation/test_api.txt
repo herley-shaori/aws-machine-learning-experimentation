@@ -1,0 +1,3 @@
+docker run -p 8080:8080 my-image:latest
+curl http://localhost:8080/ping
+curl -X POST http://localhost:8080/invocations -H "Content-Type: application/json" -d '[[1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]]'
