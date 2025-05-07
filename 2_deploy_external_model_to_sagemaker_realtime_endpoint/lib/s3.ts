@@ -21,11 +21,11 @@ export class S3Resources extends Construct {
             blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
         });
 
-        // Export the bucket name as a CloudFormation output with a fixed key
+        // Export the bucket name as a CloudFormation output
         new cdk.CfnOutput(this, 'ModelBucketName', {
             value: this.bucket.bucketName,
             description: 'Name of the S3 bucket for the model',
-            exportName: 'ModelBucketName', // Explicitly set the export name
+            exportName: 'ModelBucketName',
         });
     }
 }

@@ -28,12 +28,14 @@ export class SageMakerResources extends Construct {
 
         // Define the endpoint configuration
         const endpointConfig = new sagemaker.CfnEndpointConfig(this, 'EndpointConfig', {
-            productionVariants: [{
-                modelName: model.attrModelName,
-                variantName: 'AllTraffic',
-                initialInstanceCount: 1,
-                instanceType: 'ml.m5.large',
-            }],
+            productionVariants: [
+                {
+                    modelName: model.attrModelName,
+                    variantName: 'AllTraffic',
+                    initialInstanceCount: 1,
+                    instanceType: 'ml.m5.large',
+                },
+            ],
             vpcConfig: {
                 subnets: props.subnetIds,
                 securityGroupIds: props.securityGroupIds,
