@@ -7,8 +7,6 @@ export interface SageMakerProps extends cdk.StackProps {
     modelDataUrl: string;
     executionRole: iam.IRole;
     imageUri: string;
-    subnetIds: string[];
-    securityGroupIds: string[];
 }
 
 export class SageMakerResources extends Construct {
@@ -26,7 +24,7 @@ export class SageMakerResources extends Construct {
             },
         });
 
-        // Define the endpoint configuration
+        // Define the endpoint configuration without vpcConfig
         const endpointConfig = new sagemaker.CfnEndpointConfig(this, 'EndpointConfig', {
             productionVariants: [
                 {
@@ -36,10 +34,6 @@ export class SageMakerResources extends Construct {
                     instanceType: 'ml.m5.large',
                 },
             ],
-            vpcConfig: {
-                subnets: props.subnetIds,
-                securityGroupIds: props.securityGroupIds,
-            },
         });
 
         // Define the endpoint
