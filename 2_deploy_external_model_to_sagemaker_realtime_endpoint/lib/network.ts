@@ -8,13 +8,14 @@ export interface NetworkProps extends cdk.StackProps {
 
 export class Network extends Construct {
     public readonly vpc: ec2.Vpc;
+    public readonly securityGroup: ec2.SecurityGroup;
 
     constructor(scope: Construct, id: string, props: NetworkProps = {}) {
         super(scope, id);
 
-        // Create a VPC with a single public subnet
+        // Create a VPC with public subnets
         this.vpc = new ec2.Vpc(this, 'VPC', {
-            maxAzs: props.maxAzs ?? 2, // Default to 2 AZs for high availability
+            maxAzs: props.maxAzs ?? 2,
             subnetConfiguration: [
                 {
                     cidrMask: 24,
@@ -22,7 +23,21 @@ export class Network extends Construct {
                     subnetType: ec2.SubnetType.PUBLIC,
                 },
             ],
-            natGateways: 0, // No NAT gateways needed for public-only setup
+            natGateways: 0,
         });
+
+        // Create a security group for SageMaker endpoint
+        this.securityGroup = new ec2.SecurityGroup(this, 'SageMakerEndpointSG', {
+            vpc: this.vpc,
+            description: 'Security group for SageMaker endpoint',
+            allowAllOutbound: true,
+        });
+
+        // Allow HTTPS traffic from anywhere
+        this.securityGroup.addIngressRule(
+            ec2.Peer.anyIpv4(),
+            ec2.Port.tcp(443),
+            'Allow HTTPS from anywhere'
+        );
     }
 }

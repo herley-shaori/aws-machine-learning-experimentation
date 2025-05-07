@@ -3,6 +3,7 @@
     "2_deploy_external_model_to_sagemaker_realtime_endpoint/bin/*",
     "2_deploy_external_model_to_sagemaker_realtime_endpoint/lib/*",
     "2_deploy_external_model_to_sagemaker_realtime_endpoint/deploy.sh",
+    "1_model_creation/inference.py",
     "package.json"
   ],
   "filters": ["*.ts", "*.py", ".json", "*.txt", ".sh"]
