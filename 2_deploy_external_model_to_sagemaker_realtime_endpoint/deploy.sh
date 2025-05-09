@@ -18,4 +18,8 @@ if [ -z "$BUCKET_NAME" ]; then
 fi
 
 # Upload the zip file to the S3 bucket
-aws s3 cp ../1_model_creation/model_creation.zip s3://$BUCKET_NAME/model_creation.zip
+#aws s3 cp ../1_model_creation/model_creation.zip s3://$BUCKET_NAME/model_creation.zip
+
+# Trigger the CodeBuild project
+echo "Starting CodeBuild project: $CODEBUILD_PROJECT_NAME"
+aws codebuild start-build --project-name "$CODEBUILD_PROJECT_NAME"

@@ -4,7 +4,10 @@
     "2_deploy_external_model_to_sagemaker_realtime_endpoint/lib/*",
     "2_deploy_external_model_to_sagemaker_realtime_endpoint/deploy.sh",
     "1_model_creation/inference.py",
+    "1_model_creation/buildspec.yml",
+    "1_model_creation/requirements.txt",
+    "1_model_creation/Dockerfile",
     "package.json"
   ],
-  "filters": ["*.ts", "*.py", ".json", "*.txt", ".sh"]
+  "filters": ["*.ts", "*.py", ".json", "*.txt", ".sh", "*.yml", "Dockerfile"]
 }
