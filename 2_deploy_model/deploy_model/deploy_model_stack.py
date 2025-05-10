@@ -76,12 +76,20 @@ class DeployModelStack(Stack):
         security_group = ec2.SecurityGroup(self, "SageMakerSG",
             vpc=vpc,
             description="Security group for SageMaker endpoint",
-            allow_all_outbound=True
+            allow_all_outbound=True,
+            security_group_name="SageMakerEndpointSG"
         )
+        # Allow HTTPS traffic from anywhere
         security_group.add_ingress_rule(
             peer=ec2.Peer.any_ipv4(),
             connection=ec2.Port.tcp(443),
             description="Allow HTTPS traffic"
+        )
+        # Allow all traffic from VPC CIDR
+        security_group.add_ingress_rule(
+            peer=ec2.Peer.ipv4(vpc.vpc_cidr_block),
+            connection=ec2.Port.all_traffic(),
+            description="Allow all traffic from VPC"
         )
 
         # Create IAM role for SageMaker
@@ -92,14 +100,18 @@ class DeployModelStack(Stack):
         repository.grant_pull(sagemaker_role)
         bucket.grant_read(sagemaker_role)
 
-        # Create SageMaker model
+        # Create SageMaker model with VPC configuration
         image_uri = "623127157773.dkr.ecr.ap-southeast-3.amazonaws.com/deploymodelstack-modeldeploymentrepo918bd692-rtnjfjhqbcn5:latest"
         model = sagemaker.CfnModel(self, "MyModel",
             execution_role_arn=sagemaker_role.role_arn,
             primary_container=sagemaker.CfnModel.ContainerDefinitionProperty(
                 image=image_uri
             ),
-            enable_network_isolation=False
+            enable_network_isolation=False,
+            vpc_config=sagemaker.CfnModel.VpcConfigProperty(
+                security_group_ids=[security_group.security_group_id],
+                subnets=[vpc.public_subnets[0].subnet_id]
+            )
         )
 
         # Outputs
