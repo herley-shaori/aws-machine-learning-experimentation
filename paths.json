@@ -1,0 +1,6 @@
+{
+  "paths": [
+    "2_model_deployment/*"
+  ],
+  "filters": ["*.yaml", "*.py", ".json", "*.txt", "*.sh"]
+}
