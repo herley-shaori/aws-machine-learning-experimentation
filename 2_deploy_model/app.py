@@ -3,5 +3,6 @@ import aws_cdk as cdk
 from deploy_model.deploy_model_stack import DeployModelStack
 
 app = cdk.App()
-DeployModelStack(app, "DeployModelStack")
+env = cdk.Environment(region="ap-southeast-3")
+DeployModelStack(app, "DeployModelStack", env=env)
 app.synth()

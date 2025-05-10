@@ -1,11 +1,13 @@
-import aws_cdk as cdk
 from aws_cdk import (
     Stack,
     aws_s3 as s3,
     aws_ecr as ecr,
     aws_codebuild as codebuild,
     aws_iam as iam,
+    aws_ec2 as ec2,
+    aws_sagemaker as sagemaker,
 )
+import aws_cdk as cdk
 from constructs import Construct
 
 class DeployModelStack(Stack):
@@ -47,15 +49,57 @@ class DeployModelStack(Stack):
         project = codebuild.Project(self, "ModelDeploymentCodeBuild",
             source=codebuild.Source.s3(
                 bucket=bucket,
-                path="model_creation.zip"
+                path="code.zip"
             ),
             environment=codebuild.BuildEnvironment(
                 build_image=codebuild.LinuxBuildImage.STANDARD_5_0,
-                privileged=True  # Needed for Docker
+                privileged=True
             ),
             environment_variables=environment_variables,
             role=codebuild_role,
             build_spec=codebuild.BuildSpec.from_source_filename("buildspec.yml")
+        )
+
+        # Create VPC with one public subnet
+        vpc = ec2.Vpc(self, "MyVpc",
+            max_azs=1,
+            subnet_configuration=[
+                ec2.SubnetConfiguration(
+                    name="Public",
+                    subnet_type=ec2.SubnetType.PUBLIC,
+                    cidr_mask=24
+                )
+            ]
+        )
+
+        # Create security group for SageMaker
+        security_group = ec2.SecurityGroup(self, "SageMakerSG",
+            vpc=vpc,
+            description="Security group for SageMaker endpoint",
+            allow_all_outbound=True
+        )
+        security_group.add_ingress_rule(
+            peer=ec2.Peer.any_ipv4(),
+            connection=ec2.Port.tcp(443),
+            description="Allow HTTPS traffic"
+        )
+
+        # Create IAM role for SageMaker
+        sagemaker_role = iam.Role(self, "SageMakerRole",
+            assumed_by=iam.ServicePrincipal("sagemaker.amazonaws.com")
+        )
+        sagemaker_role.add_managed_policy(iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSageMakerFullAccess"))
+        repository.grant_pull(sagemaker_role)
+        bucket.grant_read(sagemaker_role)
+
+        # Create SageMaker model
+        image_uri = "623127157773.dkr.ecr.ap-southeast-3.amazonaws.com/deploymodelstack-modeldeploymentrepo918bd692-rtnjfjhqbcn5:latest"
+        model = sagemaker.CfnModel(self, "MyModel",
+            execution_role_arn=sagemaker_role.role_arn,
+            primary_container=sagemaker.CfnModel.ContainerDefinitionProperty(
+                image=image_uri
+            ),
+            enable_network_isolation=False
         )
 
         # Outputs
