@@ -111,13 +111,13 @@ class DeployModelStack(Stack):
             vpc_config=sagemaker.CfnModel.VpcConfigProperty(
                 security_group_ids=[security_group.security_group_id],
                 subnets=[vpc.public_subnets[0].subnet_id]
-            )
+            ),
+            model_name="MyModel"
         )
 
         # Create SageMaker endpoint configuration with custom name
         endpoint_config = sagemaker.CfnEndpointConfig(self, "MyEndpointConfig",
-          endpoint_config_name="MyModelEndpointConfig",
-          execution_role_arn=sagemaker_role.role_arn,
+          # execution_role_arn=sagemaker_role.role_arn,
           production_variants=[
               sagemaker.CfnEndpointConfig.ProductionVariantProperty(
                   model_name=model.model_name,
@@ -129,10 +129,10 @@ class DeployModelStack(Stack):
           )
 
         # Create SageMaker endpoint with custom name
-        # endpoint = sagemaker.CfnEndpoint(self, "MyEndpoint",
-        #     endpoint_name="MyModelEndpoint",
-        #     endpoint_config_name=endpoint_config.attr_endpoint_config_name
-        # )
+        endpoint = sagemaker.CfnEndpoint(self, "MyEndpoint",
+            endpoint_name="MyModelEndpoint",
+            endpoint_config_name=endpoint_config.attr_endpoint_config_name
+        )
 
         # Outputs
         cdk.CfnOutput(self, "BucketName", value=bucket.bucket_name)

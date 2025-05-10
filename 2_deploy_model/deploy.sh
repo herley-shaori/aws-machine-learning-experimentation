@@ -2,10 +2,6 @@
 
 set -e
 
-# Bootstrap CDK
-echo "Bootstrapping CDK..."
-cdk bootstrap
-
 # Deploy CDK stack
 echo "Deploying CDK stack..."
 cdk deploy --require-approval never
