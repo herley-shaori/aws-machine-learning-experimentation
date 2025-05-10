@@ -1,8 +1,0 @@
-{
-  "paths": [
-    "2_model_deployment/*",
-    "1_model_creation/buildspec.yml",
-    "1_model_creation/Dockerfile"
-  ],
-  "filters": ["*.yml","*.yaml", "*.py", ".json", "*.txt", "*.sh"]
-}

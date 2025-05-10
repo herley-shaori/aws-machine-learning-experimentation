@@ -1,0 +1,12 @@
+{
+  "paths": [
+    "deploy_model/*",
+    "app.py",
+    "deploy.sh",
+    "destroy.sh",
+    "requirements.txt",
+    "../1_model_creation/*",
+    "resource_configuration.json"
+  ],
+  "filters": ["*.yml","*.yaml", "*.py", ".json", "*.txt", "*.sh"]
+}
