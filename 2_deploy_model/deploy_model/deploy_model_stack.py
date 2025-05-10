@@ -114,7 +114,28 @@ class DeployModelStack(Stack):
             )
         )
 
+        # Create SageMaker endpoint configuration with custom name
+        endpoint_config = sagemaker.CfnEndpointConfig(self, "MyEndpointConfig",
+          endpoint_config_name="MyModelEndpointConfig",
+          execution_role_arn=sagemaker_role.role_arn,
+          production_variants=[
+              sagemaker.CfnEndpointConfig.ProductionVariantProperty(
+                  model_name=model.model_name,
+                  variant_name="AllTraffic",
+                  instance_type="ml.m5.large",
+                  initial_instance_count=1
+              )
+          ]
+          )
+
+        # Create SageMaker endpoint with custom name
+        # endpoint = sagemaker.CfnEndpoint(self, "MyEndpoint",
+        #     endpoint_name="MyModelEndpoint",
+        #     endpoint_config_name=endpoint_config.attr_endpoint_config_name
+        # )
+
         # Outputs
         cdk.CfnOutput(self, "BucketName", value=bucket.bucket_name)
         cdk.CfnOutput(self, "ECRRepositoryURI", value=repository.repository_uri)
         cdk.CfnOutput(self, "CodeBuildProjectName", value=project.project_name)
+        # cdk.CfnOutput(self, "EndpointName", value=endpoint.endpoint_name)
