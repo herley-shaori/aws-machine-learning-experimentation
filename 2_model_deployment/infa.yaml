@@ -13,10 +13,10 @@ Parameters:
     Type: String
     Default: 10.0.1.0/24
     Description: CIDR block for the public subnet
-  TagEnvironment:
+  Environment:
     Type: String
     Description: Environment tag for resources
-  TagProject:
+  Project:
     Type: String
     Description: Project tag for resources
 
@@ -31,9 +31,9 @@ Resources:
         - Key: Name
           Value: !Sub ${StackName}-VPC
         - Key: Environment
-          Value: !Ref TagEnvironment
+          Value: !Ref Environment
         - Key: Project
-          Value: !Ref TagProject
+          Value: !Ref Project
 
   PublicSubnet:
     Type: AWS::EC2::Subnet
@@ -46,9 +46,9 @@ Resources:
         - Key: Name
           Value: !Sub ${StackName}-PublicSubnet
         - Key: Environment
-          Value: !Ref TagEnvironment
+          Value: !Ref Environment
         - Key: Project
-          Value: !Ref TagProject
+          Value: !Ref Project
 
   InternetGateway:
     Type: AWS::EC2::InternetGateway
@@ -57,9 +57,9 @@ Resources:
         - Key: Name
           Value: !Sub ${StackName}-InternetGateway
         - Key: Environment
-          Value: !Ref TagEnvironment
+          Value: !Ref Environment
         - Key: Project
-          Value: !Ref TagProject
+          Value: !Ref Project
 
   VPCGatewayAttachment:
     Type: AWS::EC2::VPCGatewayAttachment
@@ -75,9 +75,9 @@ Resources:
         - Key: Name
           Value: !Sub ${StackName}-RouteTable
         - Key: Environment
-          Value: !Ref TagEnvironment
+          Value: !Ref Environment
         - Key: Project
-          Value: !Ref TagProject
+          Value: !Ref Project
 
   Route:
     Type: AWS::EC2::Route
@@ -101,9 +101,9 @@ Resources:
         - Key: Name
           Value: !Sub ${StackName}-SecurityGroup
         - Key: Environment
-          Value: !Ref TagEnvironment
+          Value: !Ref Environment
         - Key: Project
-          Value: !Ref TagProject
+          Value: !Ref Project
 
   SecurityGroupIngressVPC:
     Type: AWS::EC2::SecurityGroupIngress
