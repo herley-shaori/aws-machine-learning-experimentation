@@ -60,9 +60,9 @@ class DeployModelStack(Stack):
             build_spec=codebuild.BuildSpec.from_source_filename("buildspec.yml")
         )
 
-        # Create VPC with one public subnet
+        # Create VPC with two public subnets in different AZs
         vpc = ec2.Vpc(self, "MyVpc",
-            max_azs=1,
+            max_azs=2,  # Increased to 2 AZs
             subnet_configuration=[
                 ec2.SubnetConfiguration(
                     name="Public",
@@ -110,9 +110,8 @@ class DeployModelStack(Stack):
             enable_network_isolation=False,
             vpc_config=sagemaker.CfnModel.VpcConfigProperty(
                 security_group_ids=[security_group.security_group_id],
-                subnets=[vpc.public_subnets[0].subnet_id]
+                subnets=[subnet.subnet_id for subnet in vpc.public_subnets]  # Use all public subnets
             ),
-            model_name="MyModel"
         )
 
         # Create SageMaker endpoint configuration with custom name
@@ -120,7 +119,7 @@ class DeployModelStack(Stack):
           # execution_role_arn=sagemaker_role.role_arn,
           production_variants=[
               sagemaker.CfnEndpointConfig.ProductionVariantProperty(
-                  model_name=model.model_name,
+                  model_name=model.attr_model_name,
                   variant_name="AllTraffic",
                   instance_type="ml.m5.large",
                   initial_instance_count=1
@@ -128,7 +127,7 @@ class DeployModelStack(Stack):
           ]
           )
 
-        # Create SageMaker endpoint with custom name
+        # # Create SageMaker endpoint with custom name
         endpoint = sagemaker.CfnEndpoint(self, "MyEndpoint",
             endpoint_name="MyModelEndpoint",
             endpoint_config_name=endpoint_config.attr_endpoint_config_name
