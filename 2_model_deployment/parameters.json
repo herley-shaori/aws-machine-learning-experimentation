@@ -1,0 +1,14 @@
+[
+  {
+    "ParameterKey": "StackName",
+    "ParameterValue": "SageMakerRealTimeEndpoint"
+  },
+  {
+    "ParameterKey": "Environment",
+    "ParameterValue": "Production"
+  },
+  {
+    "ParameterKey": "Project",
+    "ParameterValue": "DeployExternalModelToSageMakerEndpoint"
+  }
+]
