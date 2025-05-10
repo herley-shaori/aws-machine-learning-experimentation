@@ -68,8 +68,14 @@ generate_path_output() {
                     # Read file content
                     content=$(cat "$file" 2>/dev/null)
                     if [[ $? -eq 0 ]]; then
-                        echo "Debug: Adding $file to output" >&2
-                        output_content+="$file\n$content\n\n"
+                        # Format path based on file name (custom logic for desired output)
+                        if [[ "$file" == *parameters.json ]]; then
+                            output_path="$file"
+                        else
+                            output_path="${file#./}"
+                        fi
+                        echo "Debug: Adding $output_path to output" >&2
+                        output_content+="$output_path\n$content\n\n"
                     else
                         echo "Debug: Failed to read content of $file" >&2
                     fi
