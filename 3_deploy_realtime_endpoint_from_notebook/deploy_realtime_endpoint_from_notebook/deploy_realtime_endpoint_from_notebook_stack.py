@@ -2,7 +2,10 @@ from aws_cdk import (
     Stack,
     aws_ec2 as ec2,
     aws_sagemaker as sagemaker,
-    aws_iam as iam
+    aws_iam as iam,
+    aws_s3 as s3,
+    RemovalPolicy,
+    Fn  # Added import for Fn
 )
 from constructs import Construct
 
@@ -36,7 +39,7 @@ class DeployRealtimeEndpointFromNotebookStack(Stack):
             "NotebookSecurityGroup",
             vpc=vpc,
             description="Security group for SageMaker Notebook",
-            allow_all_outbound=True  # Allow all outbound traffic
+            allow_all_outbound=True
         )
 
         # Add inbound rule for HTTPS (browser access)
@@ -56,6 +59,34 @@ class DeployRealtimeEndpointFromNotebookStack(Stack):
             ]
         )
 
+        # Create S3 bucket with removal policy
+        notebook_bucket = s3.Bucket(
+            self,
+            "NotebookBucket",
+            removal_policy=RemovalPolicy.DESTROY,
+            auto_delete_objects=True,
+            encryption=s3.BucketEncryption.S3_MANAGED
+        )
+
+        # Grant the notebook role access to the S3 bucket
+        notebook_bucket.grant_read_write(notebook_role)
+
+        # Create SageMaker Lifecycle Configuration to set default S3 bucket
+        lifecycle_config = sagemaker.CfnNotebookInstanceLifecycleConfig(
+            self,
+            "NotebookLifecycleConfig",
+            notebook_instance_lifecycle_config_name="SetDefaultS3Bucket",
+            on_start=[
+                sagemaker.CfnNotebookInstanceLifecycleConfig.NotebookInstanceLifecycleHookProperty(
+                    content=Fn.base64(
+                        f"#!/bin/bash\n"
+                        f"aws s3 sync /home/ec2-user/SageMaker/ s3://{notebook_bucket.bucket_name}/\n"
+                        f"echo 'export SAGEMAKER_DEFAULT_S3_BUCKET={notebook_bucket.bucket_name}' >> /home/ec2-user/.bashrc"
+                    )
+                )
+            ]
+        )
+
         # Create SageMaker Notebook Instance
         notebook_instance = sagemaker.CfnNotebookInstance(
             self,
@@ -65,5 +96,6 @@ class DeployRealtimeEndpointFromNotebookStack(Stack):
             subnet_id=self.public_subnet_1.subnet_id,
             security_group_ids=[security_group.security_group_id],
             notebook_instance_name="MyNotebookInstance",
-            direct_internet_access="Enabled"  # Required for public subnet access
+            direct_internet_access="Enabled",
+            lifecycle_config_name=lifecycle_config.notebook_instance_lifecycle_config_name
         )
