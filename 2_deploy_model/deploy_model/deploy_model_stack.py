@@ -23,11 +23,17 @@ class DeployModelStack(Stack):
             for key, value in tags.items():
                 cdk.Tags.of(self).add(key, value)
 
-        # Create S3 bucket
-        bucket = s3.Bucket(self, "ModelDeploymentBucket")
+        # Create S3 bucket with removal policy
+        bucket = s3.Bucket(self, "ModelDeploymentBucket",
+            removal_policy=cdk.RemovalPolicy.DESTROY,
+            auto_delete_objects=True
+        )
 
-        # Create ECR repository
-        repository = ecr.Repository(self, "ModelDeploymentRepo")
+        # Create ECR repository with removal policy
+        repository = ecr.Repository(self, "ModelDeploymentRepo",
+            removal_policy=cdk.RemovalPolicy.DESTROY,
+            auto_delete_images=True
+        )
         repository.add_lifecycle_rule(max_image_count=1, description="Keep only the latest image")
 
         # Create IAM role for CodeBuild
@@ -62,7 +68,7 @@ class DeployModelStack(Stack):
 
         # Create VPC with two public subnets in different AZs
         vpc = ec2.Vpc(self, "MyVpc",
-            max_azs=2,  # Increased to 2 AZs
+            max_azs=2,
             subnet_configuration=[
                 ec2.SubnetConfiguration(
                     name="Public",
@@ -79,13 +85,11 @@ class DeployModelStack(Stack):
             allow_all_outbound=True,
             security_group_name="SageMakerEndpointSG"
         )
-        # Allow HTTPS traffic from anywhere
         security_group.add_ingress_rule(
             peer=ec2.Peer.any_ipv4(),
             connection=ec2.Port.tcp(443),
             description="Allow HTTPS traffic"
         )
-        # Allow all traffic from VPC CIDR
         security_group.add_ingress_rule(
             peer=ec2.Peer.ipv4(vpc.vpc_cidr_block),
             connection=ec2.Port.all_traffic(),
@@ -110,24 +114,23 @@ class DeployModelStack(Stack):
             enable_network_isolation=False,
             vpc_config=sagemaker.CfnModel.VpcConfigProperty(
                 security_group_ids=[security_group.security_group_id],
-                subnets=[subnet.subnet_id for subnet in vpc.public_subnets]  # Use all public subnets
+                subnets=[subnet.subnet_id for subnet in vpc.public_subnets]
             ),
         )
 
-        # Create SageMaker endpoint configuration with custom name
+        # Create SageMaker endpoint configuration
         endpoint_config = sagemaker.CfnEndpointConfig(self, "MyEndpointConfig",
-          # execution_role_arn=sagemaker_role.role_arn,
-          production_variants=[
-              sagemaker.CfnEndpointConfig.ProductionVariantProperty(
-                  model_name=model.attr_model_name,
-                  variant_name="AllTraffic",
-                  instance_type="ml.m5.large",
-                  initial_instance_count=1
-              )
-          ]
-          )
+            production_variants=[
+                sagemaker.CfnEndpointConfig.ProductionVariantProperty(
+                    model_name=model.attr_model_name,
+                    variant_name="AllTraffic",
+                    instance_type="ml.m5.large",
+                    initial_instance_count=1
+                )
+            ]
+        )
 
-        # # Create SageMaker endpoint with custom name
+        # Create SageMaker endpoint
         endpoint = sagemaker.CfnEndpoint(self, "MyEndpointx",
             endpoint_name="MyModelEndpointx",
             endpoint_config_name=endpoint_config.attr_endpoint_config_name
@@ -137,4 +140,3 @@ class DeployModelStack(Stack):
         cdk.CfnOutput(self, "BucketName", value=bucket.bucket_name)
         cdk.CfnOutput(self, "ECRRepositoryURI", value=repository.repository_uri)
         cdk.CfnOutput(self, "CodeBuildProjectName", value=project.project_name)
-        # cdk.CfnOutput(self, "EndpointName", value=endpoint.endpoint_name)
