@@ -131,8 +131,8 @@ class DeployModelStack(Stack):
         )
 
         # Create SageMaker endpoint
-        endpoint = sagemaker.CfnEndpoint(self, "MyEndpointx",
-            endpoint_name="MyModelEndpointx",
+        endpoint = sagemaker.CfnEndpoint(self, "MyEndpoint",
+            endpoint_name="MyModelEndpoint",
             endpoint_config_name=endpoint_config.attr_endpoint_config_name
         )
 
