@@ -60,7 +60,7 @@ class DeployRealtimeEndpointFromNotebookStack(Stack):
         notebook_instance = sagemaker.CfnNotebookInstance(
             self,
             "NotebookInstance",
-            instance_type="ml.t3.medium",  # Cost-effective instance type
+            instance_type="ml.t3.2xlarge",
             role_arn=notebook_role.role_arn,
             subnet_id=self.public_subnet_1.subnet_id,
             security_group_ids=[security_group.security_group_id],
