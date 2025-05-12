@@ -1,2 +1,0 @@
-FROM public.ecr.aws/sagemaker/sagemaker-distribution:latest-cpu
-

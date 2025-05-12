@@ -20,11 +20,7 @@ security_group_ids = ['sg-03f6f1e8d4441f4f7']
 predictor = estimator.deploy(
     initial_instance_count=1,
     instance_type='ml.m5.2xlarge',
-    endpoint_name='sklearn-linear-regression-endpoint-kj78',
-    # vpc_config={
-    #     'Subnets': subnets,
-    #     'SecurityGroupIds': security_group_ids
-    # }
+    endpoint_name='sklearn-linear-regression-endpoint-kj78'
 )
 
 print(f"Model deployed to endpoint: sklearn-linear-regression-endpoint-89hjk")

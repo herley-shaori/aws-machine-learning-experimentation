@@ -7,3 +7,6 @@ I developed a lightweight machine learning model and validated its performance l
 
 ## 2. Model Deployment 🌐
 To support deployment, I provisioned a Virtual Private Cloud (VPC) with public subnets across two Availability Zones (AZs) for high availability, alongside an Amazon Elastic Container Registry (ECR) repository. AWS CodeBuild automates the building of the Docker image, which is then pushed to ECR. For real-time inference, I deployed an Amazon SageMaker real-time endpoint, configured to pull the containerized model from ECR. The endpoint's functionality was rigorously tested using the `aws_endpoint_test.sh` script to ensure seamless operation.
+
+## 3. Model Deployment using SageMakerSKLearnEstimator
+I prepare train.py. In this file, there are two modes, namely training mode and serving mode. If train_model.py is run, SM_CHANNELS will be filled so that train.py will train the model. However, if deploy_model.py is run, SM_CHANNELS is not filled so that train.py will not train the model. This makes Flask initialized, the model is loaded and the endpoint is ready to receive requests.
