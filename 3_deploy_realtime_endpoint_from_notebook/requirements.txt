@@ -4,3 +4,4 @@ jupyter
 pandas
 sagemaker
 scikit-learn
+flask

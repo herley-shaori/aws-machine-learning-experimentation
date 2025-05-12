@@ -51,10 +51,7 @@ sklearn_estimator = SKLearn(
     instance_type='ml.m5.2xlarge',
     framework_version='0.23-1',
     py_version='py3',
-    output_path=output_path,
-    # sagemaker_session=sagemaker_session,
-    # subnets=subnets,
-    # security_group_ids=security_group_ids
+    output_path=output_path
 )
 
 sklearn_estimator.fit({'train': s3_uri})
