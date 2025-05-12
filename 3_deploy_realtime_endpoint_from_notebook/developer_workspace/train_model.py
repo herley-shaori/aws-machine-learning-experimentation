@@ -40,10 +40,11 @@ sagemaker_session = sagemaker.Session(boto_session=boto_session)
 # Define S3 output path for model artifacts
 output_path = f's3://{bucket}/output'
 
-# Create SKLearn estimator for cloud training
-# - entry_point='train.py' is a local script, uploaded to AWS SageMaker
-# - instance_type='ml.m5.large' ensures training runs on a cloud instance
-# - sagemaker_session uses sagemaker.Session for cloud execution
+# VPC configuration
+subnets = ['subnet-0c20b14a7dd88fb72', 'subnet-003c9aa1cc5a12451']
+security_group_ids = ['sg-03f6f1e8d4441f4f7']
+
+# Create SKLearn estimator with VPC configuration
 sklearn_estimator = SKLearn(
     entry_point='train.py',
     role='arn:aws:iam::623127157773:role/DeployRealtimeEndpointFromNote-NotebookRoleCDEC1E3A-PvEOUXSxbiNF',
@@ -51,9 +52,10 @@ sklearn_estimator = SKLearn(
     framework_version='0.23-1',
     py_version='py3',
     output_path=output_path,
-    sagemaker_session=sagemaker_session,
-    region_name='ap-southeast-3'
+    # sagemaker_session=sagemaker_session,
+    # subnets=subnets,
+    # security_group_ids=security_group_ids
 )
 
-# Run training job in AWS SageMaker using S3 data
 sklearn_estimator.fit({'train': s3_uri})
+print(f"Training job completed: {sklearn_estimator.latest_training_job.name}")
