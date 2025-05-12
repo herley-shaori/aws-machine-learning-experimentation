@@ -51,16 +51,9 @@ sklearn_estimator = SKLearn(
     framework_version='0.23-1',
     py_version='py3',
     output_path=output_path,
-    sagemaker_session=sagemaker_session
+    sagemaker_session=sagemaker_session,
+    region_name='ap-southeast-3'
 )
 
 # Run training job in AWS SageMaker using S3 data
 sklearn_estimator.fit({'train': s3_uri})
-
-# Deploy model to a SageMaker endpoint in the cloud
-# predictor = sklearn_estimator.deploy(initial_instance_count=1, instance_type='ml.m5.large')
-#
-# # Test the endpoint with sample input
-# data = np.array([[1.0, 2.0, 3.0]])
-# result = predictor.predict(data)
-# print(result)
