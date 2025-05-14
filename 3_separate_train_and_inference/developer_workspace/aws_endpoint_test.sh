@@ -5,7 +5,7 @@ cat > input.json << 'EOF'
 EOF
 
 aws sagemaker-runtime invoke-endpoint \
-    --endpoint-name sklearn-linear-regression-endpoint-kj78 \
+    --endpoint-name sklearn-linear-regression-endpoint-sm2 \
     --body file://input.json \
     --content-type application/json \
     --accept application/json \

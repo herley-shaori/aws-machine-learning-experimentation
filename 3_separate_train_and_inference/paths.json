@@ -1,0 +1,7 @@
+{
+  "paths": [
+    "sagemaker_dev/*",
+    "sagemaker_dev/entrypoint/*"
+  ],
+  "filters": ["*.yml","*.yaml", "*.py", ".json", "*.txt", "*.sh"]
+}
